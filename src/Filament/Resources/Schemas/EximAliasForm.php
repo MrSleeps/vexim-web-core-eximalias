@@ -2,6 +2,7 @@
 
 namespace VEximweb\Core\EximAlias\Filament\Resources\Schemas;
 
+use Closure;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
@@ -90,8 +91,20 @@ class EximAliasForm
                         TextInput::make('smtp')
                             ->label('Forwards To')
                             ->required()
-                            ->email()
-                            ->helperText('Where should this alias forward to? (e.g., user@example.com) - multiple email addresses should be seperated by a comma')
+                            ->rules([
+                                fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                                    $addresses = array_map('trim', explode(',', (string) $value));
+
+                                    foreach ($addresses as $address) {
+                                        if ($address === '' || filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
+                                            $fail('Each forwarding destination must be a valid email address.');
+
+                                            return;
+                                        }
+                                    }
+                                },
+                            ])
+                            ->helperText('Where should this alias forward to? (e.g., user@example.com) - multiple email addresses should be separated by a comma')
                             ->live(debounce: 500)
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $set('pop', $state);

@@ -6,6 +6,7 @@ use VEximweb\Core\EximAlias\Filament\Resources\EximAliasResource;
 use VEximweb\Core\Domain\Services\DomainAdminLimitService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Validation\ValidationException;
 
 class CreateEximAlias extends CreateRecord
 {
